@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="netease_mall.finance">
+
+    <resultMap id="CartVo" type="com.netease.mall.Vo.CartVo">
+        <result column="commodity_id" property="commodityId"/>
+        <result column="title" property="title"/>
+        <result column="price" property="price"/>
+        <result column="num" property="num"/>
+        <result column="picture" property="picture"/>
+        <result column="abstract" property="summary"/>
+    </resultMap>
+
+    <resultMap id="BoughtVo" type="com.netease.mall.Vo.BoughtVo">
+        <result column="title" property="title"/>
+        <result column="pay_price" property="price"/>
+        <result column="num" property="num"/>
+        <result column="create_time" property="time"/>
+        <result column="picture" property="picture"/>
+    </resultMap>
+
+    <select id="selectCartList" resultMap="CartVo" parameterType="java.util.Map">
+        SELECT a.commodity_id, b.title, b.price, a.num, b.picture, b.abstract
+        FROM `netease_mall`.`shopping_cart` as a
+        LEFT JOIN `netease_mall`.`commodity`as b
+        ON a.commodity_id = b.id
+        WHERE  a.user_id = #{userId}
+        AND a.num > 0
+        AND b.block_flag = 0
+    </select>
+
+    <update id="addToCard" parameterType="java.util.Map">
+        INSERT INTO shopping_cart (user_id,commodity_id,num, created_time, block_flag)
+        values(#{userId},#{commodityId},1,NOW(), false)
+        ON  DUPLICATE key
+        UPDATE num = num+1;
+    </update>
+
+    <update id="deleteCart" parameterType="String">
+        update shopping_cart
+        set num = 0
+        where user_id = #{userId};
+    </update>
+
+    <insert id="addToBought" parameterType="java.util.Map"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into bought
+        (user_id, commodity_id, pay_price, num, block_flag, create_time)
+        values
+        <foreach collection="cartVos" separator="," item="cartVo"
+                 >
+            (#{userId},
+            #{cartVo.commodityId},
+            #{cartVo.price},
+            #{cartVo.num},
+            0,
+            NOW())
+        </foreach>
+    </insert>
+
+    <select id="getAllBought" parameterType="String" resultMap="BoughtVo">
+        select c.title, c.picture, b.pay_price, b.num, b.create_time
+        from bought as b
+        left join commodity as c on b.commodity_id = c.id
+        where b.user_id = #{userId}
+    </select>
+
+
+
+</mapper>

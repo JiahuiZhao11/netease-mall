@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="netease_mall.userinfo">
+
+    <resultMap id="UserVo" type="com.netease.mall.Vo.UserVo">
+        <result column="user_id" property="userId" />
+        <result column="user_name" property="userName" />
+        <result column="password" property="password" />
+        <result column="user_type" property="userType" />
+        <result column="block_flag" property="blockFlag" />
+        <result column="create_time" property="createAt" />
+    </resultMap>
+
+    <select id="select" resultMap="UserVo" parameterType="java.util.Map">
+        select user_id, user_name, password, user_type, block_flag, create_time from `netease_mall`.`user_info`
+        WHERE 1 = 1
+        <if test="userName != null">
+            and user_name = #{userName}
+        </if>
+        <if test="password != null">
+            and password = #{password}
+        </if>
+    </select>
+
+</mapper>

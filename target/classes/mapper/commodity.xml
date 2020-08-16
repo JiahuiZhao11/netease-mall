@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="netease_mall.commodity">
+
+    <update id="delete" parameterType="String">
+        update commodity
+        set block_flag = 1
+        where id = #{commodityId}
+    </update>
+
+
+    <insert id="add" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
+        insert into commodity
+        (title, picture, abstract, text, seller_id, price, block_flag, create_time)
+        values (#{title}, #{picture}, #{summary}, #{text}, #{userId}, #{price}, 0, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE commodity
+        set title = #{title},
+        abstract = #{summary},
+        text = #{text},
+        price = #{price},
+        picture = #{picture}
+        WHERE id = #{commodityId}
+    </update>
+
+</mapper>
